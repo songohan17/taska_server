@@ -15,6 +15,19 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var device = require('express-device');
 
+var config = require('./config');
+var schema = require('./orm/schema');
+
+var db          = require('mysql'); //This sets up the MySQL connection
+
+var db_pool     = db.createPool({
+    host        : config.db.host,
+    port        : config.db.port,
+    database    : config.db.database,
+    user        : config.db.user,
+    password    : config.db.password
+});
+
 /**
  * Require routes
  */
@@ -32,6 +45,15 @@ var app = express();
  */
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
+
+/**
+ * ORM setup
+ * http://twitter.github.io/hogan.js/
+ */
+app.set('config', config);
+app.set('schema', schema);
+app.set('db', db);
+app.set('db_pool', db_pool);
 
 /**
  * Favicon setup

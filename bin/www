@@ -22,14 +22,23 @@ app.set('port', port);
 /**
  * Create HTTP server.
  */
-
 var server = http.createServer(app);
 
 /**
- * Listen on provided port, on all network interfaces.
+ * 
+ * Create schema before listen
  */
+app.get('schema').init(app.get('db_pool'), function(){
+    debug('Database schema created');
 
-server.listen(port);
+   /**
+    * Listen on provided port, on all network interfaces.
+    */
+
+   server.listen(port);
+});
+
+
 
 /**
  * bind handling to global server events

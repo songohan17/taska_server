@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
+
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   var device = req.device;
@@ -17,6 +19,51 @@ router.get('/', function(req, res, next) {
     res.end('welcome to the session demo. refresh!');
   }
   //res.render('index', { title: 'Csibész' });
+});
+
+router.get( '/rest/:table/:id?', function ( req, res ){
+    
+    var orm = require('../orm/orm');
+    orm.init(
+        req.app.get('db'),
+        req.app.get('db_pool'),
+        req.app.get('schema')
+    );
+    //console.log(req.app.get('schema'));
+    //var sample_content_query = new (require('../orm/models/base/sample_content_query'))();
+
+    /*orm.query('sample_content')
+            //.filterById(['valami', 'masvalami'])
+            //.filterByTitle('valami')
+            //.or()
+            //.where("title LIKE 'valami%'")
+            //.filterByBody('masvaami')
+            .findPk(1, function(err, rows){
+                //console.log(rows[0].getBody());
+            });
+    */
+    /*var obj = orm.make('sample_content');
+    obj.setTitle('New title');
+    obj.setBody('New body');
+    //console.log(obj);
+    obj.save(function(err, result){
+        //console.log(result);
+    });
+    res.end();*/
+    /*orm.query('sample_content').findPk(1, function(err, rows){
+        rows[0].setTitle('latest');
+        rows[0].save(function(err, result){
+            console.log(result);
+        });
+    });*/
+    orm.query('sample_content').findOne(function(err, rows){
+        
+        console.log(rows); 
+        for(i = 0; i<rows.length; i++){
+            var row = rows[i];
+            //console.log(row.toArray()); 
+        }
+    });
 });
 
 module.exports = router;
