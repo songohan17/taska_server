@@ -7,13 +7,13 @@ orm.init = function(db, db_pool, schema){
 };
 
 orm.query = function(model){
-    var obj = new (require('./models/base/'+model+'_query'))();
+    var obj = new (require('./models/'+model+'_query'))();
     obj.init(orm.db, orm.db_pool);
     return obj;
 };
 
 orm.make = function(model){
-    var obj = new (require('./models/base/'+model))();
+    var obj = new (require('./models/'+model))();
     obj.init(orm.db, orm.db_pool);
     obj.setNew(true);
     return obj;

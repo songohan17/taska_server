@@ -1,38 +1,11 @@
 var query = new (require('../../query'))();
 
-function sample_content_query() {
+function sample_content_query_base() {
     this.model = 'sample_content';
 
     this.fields = ['id', 'title', 'body'];
     
-    this.criterias = [];
-
-    this.findPk = function(id, cb){
-        var sql = "SELECT "+this.getFieldlistStr()+" FROM sample_content WHERE id = '"+id+"'";
-        this.execute(sql, cb);
-    };
-
-    this.findPks = function(arr, cb){
-        var sql = "SELECT "+this.getFieldlistStr()+" FROM sample_content WHERE id IN ("+arr.join("', '")+")";
-        // TODO
-        return sql;
-    };
-
-    this.filterByPrimaryKey = function(v){
-        this.handleContinuousFiltering();
-
-        // add current
-        this.criterias.push({
-            field : 'Id',
-            operator: (v.constructor === Array) ? 'IN' : '=',
-            value: v,
-        });
-
-        this.handleOrEnclose();
-
-        return this;
-    };
-
+    this.primaryKey = 'id';
 
     this.filterById = function(v){
         this.handleContinuousFiltering();
@@ -79,7 +52,7 @@ function sample_content_query() {
         return this;
     }; 
     
-    
+    return this;
 }
-sample_content_query.prototype = query;
-module.exports = sample_content_query;
+sample_content_query_base.prototype = query;
+module.exports = sample_content_query_base;

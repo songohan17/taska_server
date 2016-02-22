@@ -10,8 +10,7 @@ Array.prototype.getUnique = function(){
    return a;
 }
 
-Object.prototype.equals = function(x)
-{
+Object.prototype.equals = function(x){
     for(p in this)
     {
     	switch(typeof(this[p]))
@@ -33,11 +32,7 @@ Object.prototype.equals = function(x)
     return true;
 }
 
-function base(){
-
-    this._new = true;
-    this._deleted = false;
-    this.modifiedColumns = [];
+function model(){
     
     this.init = function(db, db_pool){
         this.db = db;
@@ -93,7 +88,7 @@ function base(){
         return this.equals(obj);
     };
     
-    this.getFieldlistStr = function(){
+    this.buildFieldlist = function(){
         return '`'+this.fields.join("`, `")+'`';
     };
     
@@ -101,17 +96,46 @@ function base(){
         this.values;
     };
     
+    this.getPrimaryKey = function(){
+       return this['get'+this.primaryKey.toLowerCase().ucfirst()]();    
+    };
+
+    this.setPrimaryKey = function(v){
+        return this['set'+this.primaryKey.toLowerCase().ucfirst()](v);  
+    };
+
+    this.isPrimaryKeyNull = function(){
+        return (null == this.getPrimaryKey());   
+    };
+
+    this.isAlradyInSave = function(){
+        return this.alreadyInSave;   
+    };
+
+    this.isAlradyInValidation = function(){
+        return this.alreadyInValidation;
+    };
+    
+    this.toString = function(){
+        return JSON.stringify(this.toArray());
+    };
+    
     this.execute = function(sql, cb){
         this.db_pool.getConnection( function ( err, con ){
             // check for any connection errors
             if( err ){
+                console.log('error at connaction: ');
+                console.log(err);
                 cb(err);
             }else{
                 // connected
+                console.log(sql);
                 con.query(
                     sql,
                     function ( err, rows, fields ){
-                        if( err ){ 
+                        if( err ){
+                            console.log('error at execute: ');
+                            console.log(err);
                             cb(err);
                         }else{
                             cb(null, rows);
@@ -122,8 +146,98 @@ function base(){
             }
         });
     };
-    // TODO: pre/post Save, Insert, Update, Delete
+    
+    this.copy = function(){
+       var newObj = Object.create(this);
+       this.copyInto(newObj, true);
+       return newObj;
+    };
+    
+    this.clear = function(){  
+        for(v in this.values){
+            this.values[v] = null;
+        }
+        this.alreadyInSave = false;
+        this.alreadyInValidation = false;
+        this.applyDefaultValues();
+        this.resetModified();
+        this.setNew(true);
+        this.setDeleted(false);
+    };
+    
+    this.delete = function(cb){
+        var sql = "DELETE FROM `" + this.model + "` \n\
+                    WHERE `" + this.primaryKey + "` = " + this.db.escape(this.getPrimaryKey());
+        this.preDelete(function(sql,cb){
+            this.execute(sql,function(err, rows){
+                this.postDelete(cb(err, rows));
+            });
+        });
+    };
+    
+    this.reload = function(cb){
+        if(this.isNew()) throw err;
+        var sql = "SELECT " + this.buildFieldlist() + " FROM `" + this.model + "` \n\
+                    WHERE `" + this.primaryKey + "` = " + this.db.escape(this.getPrimaryKey());
+        this.execute(sql,function(err, rows){
+            if(err){
+                cb(err);
+            }else{
+                this.fromArray(rows[0]);
+                this.setNew(false);
+                this.resetModified();
+                cb(null, this);
+            }
+        });
+    };
+
+    this.save = function(cb){
+        if(this.isDeleted()) throw Error("Already deleted");
+        this.preSave(function(cb){
+            if(this.isNew()){ // INSERT
+                this.preInsert(function(cb){
+                    this.doInsert(function(cb){
+                        this.postInsert(function(cb){
+                            this.postSave(cb);
+                        });
+                    });
+                });
+            }else{ // UPDATE
+                this.preUpdate(function(cb){
+                    this.doUpdate(function(cb){
+                        this.postUpdate(function(cb){
+                            this.postSave(cb);
+                        });
+                    });
+                });
+            }
+        });  
+    };
+    
+    this.preSave = function(cb){
+       cb(); 
+    };
+    
+    this.preInsert = function(cb){
+       cb(); 
+    };
+    
+    this.preUpdate = function(cb){
+       cb(); 
+    };
+    
+    this.preSave = function(cb){
+       cb(); 
+    };
+    
+    this.postInsert = function(cb){
+       cb(); 
+    };
+    
+    this.postUpdate = function(cb){
+       cb(); 
+    };
     
     return this;
 }
-module.exports = base;
+module.exports = model;

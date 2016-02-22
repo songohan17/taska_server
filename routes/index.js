@@ -1,11 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-
-
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  var device = req.device;
+  /*var device = req.device;
   console.log(device.type);
   var sess = req.session
   if (sess.views) {
@@ -17,8 +15,8 @@ router.get('/', function(req, res, next) {
   } else {
     sess.views = 1;
     res.end('welcome to the session demo. refresh!');
-  }
-  //res.render('index', { title: 'Csibész' });
+  }*/
+  res.render('index', { title: 'Csibész' });
 });
 
 router.get( '/rest/:table/:id?', function ( req, res ){
@@ -42,28 +40,22 @@ router.get( '/rest/:table/:id?', function ( req, res ){
                 //console.log(rows[0].getBody());
             });
     */
-    /*var obj = orm.make('sample_content');
+    var obj = orm.make('sample_content');
     obj.setTitle('New title');
     obj.setBody('New body');
     //console.log(obj);
     obj.save(function(err, result){
-        //console.log(result);
+        console.log(err);
+        console.log(result);
     });
-    res.end();*/
-    /*orm.query('sample_content').findPk(1, function(err, rows){
-        rows[0].setTitle('latest');
-        rows[0].save(function(err, result){
-            console.log(result);
-        });
-    });*/
-    orm.query('sample_content').findOne(function(err, rows){
-        
-        console.log(rows); 
-        for(i = 0; i<rows.length; i++){
-            var row = rows[i];
-            //console.log(row.toArray()); 
+    //res.end();
+    
+    /*orm.query('sample_content').findPk("2", function(err, rows){ 
+        for(var i = 0; i<rows.length; i++){
+            rows[i].
+            console.log(i+" - "+rows[i].getId()+" "+rows[i].getTitle()); 
         }
-    });
+    });*/
 });
 
 module.exports = router;
