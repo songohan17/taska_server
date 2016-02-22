@@ -32,6 +32,11 @@ Object.prototype.equals = function(x){
     return true;
 }
 
+String.prototype.ucfirst = function()
+{
+    return this.charAt(0).toUpperCase() + this.substr(1);
+}
+
 function model(){
     
     this.init = function(db, db_pool){
@@ -176,7 +181,7 @@ function model(){
     };
     
     this.reload = function(cb){
-        if(this.isNew()) throw err;
+        if(this.isNew()) throw Error('New can not be reloaded');
         var sql = "SELECT " + this.buildFieldlist() + " FROM `" + this.model + "` \n\
                     WHERE `" + this.primaryKey + "` = " + this.db.escape(this.getPrimaryKey());
         this.execute(sql,function(err, rows){
@@ -192,26 +197,13 @@ function model(){
     };
 
     this.save = function(cb){
-        if(this.isDeleted()) throw Error("Already deleted");
-        this.preSave(function(cb){
-            if(this.isNew()){ // INSERT
-                this.preInsert(function(cb){
-                    this.doInsert(function(cb){
-                        this.postInsert(function(cb){
-                            this.postSave(cb);
-                        });
-                    });
-                });
-            }else{ // UPDATE
-                this.preUpdate(function(cb){
-                    this.doUpdate(function(cb){
-                        this.postUpdate(function(cb){
-                            this.postSave(cb);
-                        });
-                    });
-                });
-            }
-        });  
+        var that = this;
+        if(that.isDeleted()) throw Error("Already deleted");
+        if(that.isNew()){ // INSERT
+            that.doInsert(cb);
+        }else{ // UPDATE
+            that.doUpdate(cb);
+        }  
     };
     
     this.preSave = function(cb){
@@ -226,16 +218,16 @@ function model(){
        cb(); 
     };
     
-    this.preSave = function(cb){
-       cb(); 
+    this.postSave = function(err, rows, cb){
+       cb(err, rows); 
     };
     
-    this.postInsert = function(cb){
-       cb(); 
+    this.postInsert = function(err, rows, cb){
+       cb(err, rows); 
     };
     
-    this.postUpdate = function(cb){
-       cb(); 
+    this.postUpdate = function(err, rows, cb){
+       cb(err, rows); 
     };
     
     return this;

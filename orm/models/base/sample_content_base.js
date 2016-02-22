@@ -103,7 +103,7 @@ function sample_content_base() {
         valuesStr += "'"+this.getTitle()+"', ";
         valuesStr += "'"+this.getBody()+"', ";
         valuesStr = valuesStr.substr(0, valuesStr.length - 2); // TODO rtrim();
-        var sql = "INSERT INTO `"+this.model+"` (`"+this.getFieldlistStr()+"` VALUES ("+valuesStr+")";
+        var sql = "INSERT INTO `"+this.model+"` ("+this.buildFieldlist()+") VALUES ("+valuesStr+")";
         this.execute(sql, cb);
     };
     

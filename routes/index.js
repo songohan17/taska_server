@@ -40,22 +40,23 @@ router.get( '/rest/:table/:id?', function ( req, res ){
                 //console.log(rows[0].getBody());
             });
     */
-    var obj = orm.make('sample_content');
-    obj.setTitle('New title');
-    obj.setBody('New body');
-    //console.log(obj);
-    obj.save(function(err, result){
-        console.log(err);
-        console.log(result);
-    });
+//    var obj = orm.make('sample_content');
+//    obj.setTitle('New title');
+//    obj.setBody('New body');
+//    //console.log(obj);
+//    obj.save(function(err, result){
+//        console.log(err);
+//        console.log(result);
+//    });
     //res.end();
     
-    /*orm.query('sample_content').findPk("2", function(err, rows){ 
-        for(var i = 0; i<rows.length; i++){
-            rows[i].
-            console.log(i+" - "+rows[i].getId()+" "+rows[i].getTitle()); 
-        }
-    });*/
+    orm.query('sample_content').findPk("9", function(err, obj){ 
+        obj.setTitle('Új title');
+        obj.save(function(err, rows){
+            console.log(err);
+            console.log(rows);
+        });
+    });
 });
 
 module.exports = router;
