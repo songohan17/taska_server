@@ -164,6 +164,39 @@ function query() {
                 +this.buildLimit(); 
     };
     
+    this.buildCountQuery = function(){
+        return 'SELECT COUNT(*) AS COUNT FROM `'+this.model+'` '
+                +this.buildWhere()
+                +this.buildOrderby()
+                +this.buildLimit(); 
+    };
+    
+    this.buildBulkUpdateQuery = function(updateData){
+        return 'UPDATE `'+this.model+'` '
+                +' SET ' +this.buildUpdateDataQuery(updateData) + ' '
+                +this.buildWhere()
+                +this.buildOrderby()
+                +this.buildLimit(); 
+    };
+    
+    this.buildUpdateDataQuery = function(updateData){
+        var sql = "";
+        for(k in updateData){
+            sql += '`' + k + '`=' + this.db.escape(updateData[k]) +', '
+        }
+        sql = sql.substr(0, sql.length - 2);
+        return sql; 
+    };
+    
+    this.buildBulkInsertQuery = function(objectArray){
+        var sql = "INSERT INTO `"+this.model+"` ("+this.buildFieldlist()+") VALUES ";
+        for(var i = 1; i < objectArray.length; i++){
+            sql += objectArray[i].buildBulkInsertRow()+", ";
+        }
+        sql = sql.substr(0, sql.length - 2);
+        return sql;
+    };
+    
     // Executor functions
     
     this.find = function(cb){
@@ -191,6 +224,17 @@ function query() {
         this.find(cb);
     };
     
+    this.count = function(cb){
+       var sql = this.buildCountQuery();
+        this.execute(sql,function(err, rows){
+            if(err){
+                cb(err);
+            }else{
+                cb(null, rows[0].COUNT);
+            }
+        });
+    };
+    
     this.toArray = function(cb){
         var sql = this.buildQuery();
         this.executeToArray(sql,cb);
@@ -206,6 +250,16 @@ function query() {
     
     this.delete = function(cb){
         var sql = this.buildDeleteQuery();
+        this.execute(sql,cb);
+    };
+    
+    this.bulkUpdate = function(updateData, cb){
+        var sql = this.buildBulkUpdateQuery(updateData);
+        this.execute(sql,cb);
+    };
+    
+    this.bulkInsert = function(objectArray, cb){
+        var sql = this.buildBulkInsertQuery(objectArray);
         this.execute(sql,cb);
     };
     

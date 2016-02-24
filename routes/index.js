@@ -50,7 +50,7 @@ router.get( '/rest/:table/:id?', function ( req, res ){
 //    });
     //res.end();
     
-    orm.query('sample_content').findPk("9", function(err, obj){ 
+    orm.query('sample_content').findPk("1", function(err, obj){ 
         obj.setTitle('Új title');
         obj.save(function(err, rows){
             console.log(err);

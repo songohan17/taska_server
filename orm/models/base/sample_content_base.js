@@ -147,6 +147,20 @@ function sample_content_base() {
         if(obj.body !== undefined) this.setBody(obj.body);
         return this;
     };
+    
+    this.buildBulkInsertRow = function(){
+        var sql = "(";
+        if(this.autoIncrement){
+            sql += "NULL, ";
+        }else{
+            sql += "'"+this.getPrimaryKey()+"', ";
+        }
+        sql += "'"+this.getTitle()+"', ";
+        sql += "'"+this.getBody()+"', ";
+        sql = sql.substr(0, sql.length - 2);
+        sql += ")";
+        return sql;
+    };
 
     this.validate = function(){
          // TODO   
