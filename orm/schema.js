@@ -92,6 +92,29 @@ schema.loadFields = function(con, tableName, tablecount, callback){
         }
     );
 }
+
+schema.loadForeignKeys = function(con, tableName, tablecount, callback){
+        var strQuery = "SELECT TABLE_NAME, COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME "
+                        +"FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE "
+                        +"WHERE REFERENCED_TABLE_NAME = "+tableName;
+	con.query(
+        strQuery,
+        function ( err, rows, fields ){
+        	schema.i = schema.i + 1;
+            if( err ){ 
+            	console.log('ERROR');
+                // Couldn't get the query to run, so send JSON with an error message and an HTTP status of 500 (Internal Server Error)
+                sendError( res, 500, 'error', 'query', err );
+            }else{
+            	schema.tables[tableName].foreignKeys = [];
+            	schema.tables[tableName].foreignKeys = rows;
+            	if(schema.i == (tablecount-1)){
+            		callback();
+            	}
+            }
+        }
+    );
+}
 	
 };
 module.exports = schema;

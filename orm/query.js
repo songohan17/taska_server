@@ -64,6 +64,25 @@ function query() {
         return this;
     };
     
+    this.next = function(){
+        if(this.offsetValue == false || this.limitValue == false){
+            return this;
+        }
+        this.offsetValue += this.limitValue;
+        return this;
+    }
+    
+    this.prev = function(){
+        if(this.offsetValue == false || this.limitValue == false){
+            return this;
+        }
+        this.offsetValue -= this.limitValue;
+        if(this.offsetValue < 0){
+            this.offsetValue = 0;
+        }
+        return this;
+    }
+    
     this.orderBy = function(field, align){
         this.orderByList.push({field: field, align: align});
         return this;
@@ -110,7 +129,7 @@ function query() {
                 where += " "+criteria.where;
             }
             else{
-                // TODO escape
+                // escape
                 if(criteria.value instanceof Array){
                     for(var i = 0; i<criteria.value.length; i++){
                         var escaped = this.db.escape( criteria.value[i] );
@@ -137,7 +156,7 @@ function query() {
         if(this.offsetValue == false || this.limitValue == false){
             return "";
         }
-        return " LIMIT "+this.offsetValue+", "+this.limitValue;
+        return " LIMIT "+parseInt(this.offsetValue)+", "+parseInt(this.limitValue);
     };
     
     this.buildOrderby = function(){

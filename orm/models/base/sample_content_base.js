@@ -98,10 +98,10 @@ function sample_content_base() {
         if(this.autoIncrement){
             valuesStr += "NULL, ";
         }else{
-            valuesStr += "'"+this.getPrimaryKey()+"', ";
+            valuesStr += this.db.escape(this.id)+", ";
         }
-        valuesStr += "'"+this.getTitle()+"', ";
-        valuesStr += "'"+this.getBody()+"', ";
+        valuesStr += this.db.escape(this.title)+", ";
+        valuesStr += this.db.escape(this.body)+", ";
         valuesStr = valuesStr.substr(0, valuesStr.length - 2); // TODO rtrim();
         var sql = "INSERT INTO `"+this.model+"` ("+this.buildFieldlist()+") VALUES ("+valuesStr+")";
         this.execute(sql, cb);
@@ -114,10 +114,10 @@ function sample_content_base() {
         }
         var sql = "UPDATE `"+this.model+"` SET ";
         for(i=0; i<this.modifiedColumns.length; i++){
-            sql += "`"+this.modifiedColumns[i]+"`='"+this['get'+this.modifiedColumns[i].toLowerCase().ucfirst()]()+"', "; 
+            sql += "`"+this.modifiedColumns[i]+"`="+this.db.escape(this.values[this.modifiedColumns[i].toLowerCase()])+", "; 
         }
         sql = sql.substr(0, sql.length - 2); // TODO rtrim();
-        sql += " WHERE `"+this.primaryKey+"` = '"+this['get'+this.primaryKey.toLowerCase().ucfirst()]()+"'";
+        sql += " WHERE `"+this.primaryKey+"` = "+this.db.escape(this.values[this.primaryKey.toLowerCase()]);
         this.execute(sql, cb);
     };
     
@@ -153,10 +153,10 @@ function sample_content_base() {
         if(this.autoIncrement){
             sql += "NULL, ";
         }else{
-            sql += "'"+this.getPrimaryKey()+"', ";
+            sql += this.db.escape(this.id)+", ";
         }
-        sql += "'"+this.getTitle()+"', ";
-        sql += "'"+this.getBody()+"', ";
+        sql += this.db.escape(this.title)+", ";
+        sql += this.db.escape(this.body)+", ";
         sql = sql.substr(0, sql.length - 2);
         sql += ")";
         return sql;

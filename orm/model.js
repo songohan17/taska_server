@@ -172,7 +172,7 @@ function model(){
     
     this.delete = function(cb){
         var sql = "DELETE FROM `" + this.model + "` \n\
-                    WHERE `" + this.primaryKey + "` = " + this.db.escape(this.getPrimaryKey());
+                    WHERE `" + this.primaryKey + "` = " + this.db.escape(this.values[this.primaryKey]);
         this.preDelete(function(sql,cb){
             this.execute(sql,function(err, rows){
                 this.postDelete(cb(err, rows));
@@ -183,7 +183,7 @@ function model(){
     this.reload = function(cb){
         if(this.isNew()) throw Error('New can not be reloaded');
         var sql = "SELECT " + this.buildFieldlist() + " FROM `" + this.model + "` \n\
-                    WHERE `" + this.primaryKey + "` = " + this.db.escape(this.getPrimaryKey());
+                    WHERE `" + this.primaryKey + "` = " + this.db.escape(this.values[this.primaryKey]);
         this.execute(sql,function(err, rows){
             if(err){
                 cb(err);

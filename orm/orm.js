@@ -52,6 +52,25 @@ module.exports = orm;
  * 
 View generàlàs
 http://stackoverflow.com/questions/201621/how-do-i-see-all-foreign-keys-to-a-table-or-column
+For a Table:
+
+SELECT 
+  TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME, REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME
+FROM
+  INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+WHERE
+  REFERENCED_TABLE_NAME = '<table>';
+
+For a Column:
+
+SELECT 
+  TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME, REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME
+FROM
+  INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+WHERE
+  REFERENCED_TABLE_NAME = '<table>';
+
+
 http://stackoverflow.com/questions/12352048/mysql-create-view-joining-two-tables
 
 Indexek felépítése
@@ -60,12 +79,11 @@ http://stackoverflow.com/questions/5213339/how-to-see-indexes-for-a-database-or-
 Client side version
 // ajax client?
 
-Setterek adatbàzis formàra / Getterek adatbàzisról kód formàra
+Setterek adatbàzis formàra / Getterek adatbàzisról kód formàra és escape
+Filedname and operator escape
 
 Validation.js
 
 Access rights
-
-next() pre() for query (onset and limit manipulation 
  * 
  */
